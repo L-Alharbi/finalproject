@@ -1,6 +1,6 @@
 from django.shortcuts import render, redirect
 from .models import *
-from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.forms import *
 from .forms import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
@@ -9,7 +9,6 @@ from django.db.models import Avg
 from django.http import JsonResponse
 import json
 # Create your views here.
-
 
 
 
@@ -57,7 +56,6 @@ def search(request):
     query = request.GET.get('q', '')
     selected_category = request.GET.get('category', '')
 
-    # Filter products based on search query and selected category
     products = Product.objects.filter(name__icontains=query).order_by("-price")
     if selected_category:
         products = products.filter(category__name=selected_category)
@@ -72,16 +70,29 @@ def search(request):
     return render(request, 'store/search.html', context)
 
 
-def category(request, cat):
+def category(request, cat ):
     try:
         category = Category.objects.get(name=cat)
         product = Product.objects.filter(category=category)
-        return render(request,'store/category.html',{'products':product, 'category':category})
+        return render(request,'store/category.html',{
+            'products':product, 
+            'category':category, 
+            })
 
     except:
         return redirect('store')
 
+def subcategory_view(request, category_name, subcategory_name):
+    category = Category.objects.get(name=category_name)
+    subcategory = Subcategory.objects.get(category=category, name=subcategory_name)
+    product = Product.objects.filter(subcategory=subcategory)
+    
 
+    return render(request, 'store/subcategory.html', {
+        'products':product, 
+        'category': category, 
+        'subcategory': subcategory,
+    })
 
 def profile(request):
     if request.user.is_authenticated:
@@ -121,16 +132,35 @@ def loginPage(request):
             login(request, user)
             return redirect('store')
         else:
-            None
+            pass
     else:
         context = {}
         return render(request, 'store/login.html', context)
 
-
 def store(request):
+    if request.user.is_authenticated:
+        user = request.user
+
+        customer, created = Customer.objects.get_or_create(user=user)
+
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        items = order.orderitem_set.all()
+        cartItems = order.cartItems
+    else:
+        items = []
+        order = {'cartTotal': 0, 'cartItems': 0}
+        cartItems = order['cartItems']
+
     categorys = Category.objects.all()
-    products = Product.objects.all()
-    context = {'products' :products,'categorys': categorys}
+    subcategorys = Subcategory.objects.all()
+    products = Product.objects.all() 
+
+    context = {
+        'products': products,
+        'categorys': categorys,
+        'subcategorys': subcategorys,
+        'cartItems': cartItems
+    }
     return render(request, 'store/store.html', context)
 
 def cart(request):
@@ -214,3 +244,8 @@ def ajax_add_review(request, pk, ):
         'avgRate': avgRate
         }
     )
+
+
+def logoutfunc(request):
+    logout(request)
+    return redirect('store')

@@ -3,13 +3,22 @@ from django.contrib.auth.models import User
 
 # Create your models here.
 
+
+RATING = (
+    (1,'★☆☆☆☆'),
+    (2,'★★☆☆☆'),
+    (3,'★★★☆☆'),
+    (4,'★★★★☆'),
+    (5,'★★★★★'),
+)
+
 class Customer(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE,null=True, blank=True)
     name = models.CharField(max_length=64, null=True)
     email = models.CharField(max_length=64, null=True)
     
     def __str__(self):
-        return self.name
+        return self.user.username if self.user else 'Anonymous Customer'
     
 
 class Category(models.Model):
@@ -18,11 +27,18 @@ class Category(models.Model):
     def __str__(self):
         return self.name
 
+class Subcategory(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='subcategories')
+    name = models.CharField(max_length=64)
+
+    def __str__(self):
+        return self.name
 
 class Product(models.Model):
     name = models.CharField(max_length=64)
     price = models.FloatField()
     category = models.ForeignKey(Category, on_delete=models.CASCADE, default=1)
+    subcategory = models.ForeignKey(Subcategory, on_delete=models.SET_NULL,null=True, blank=True,related_name='products', default=1)
     description = models.CharField(max_length=250, blank=True)
     image = models.ImageField(null=True, blank=True)
 
@@ -81,6 +97,21 @@ class Address(models.Model):
 
     def __str__(self):
         return self.address
+
+
+class Review(models.Model):
+    customer = models.ForeignKey(Customer,on_delete=models.SET_NULL,null=True, blank=True, related_name="reviews")
+    product = models.ForeignKey(Product,on_delete=models.SET_NULL,null=True)
+    review = models.TextField()
+    rating = models.IntegerField(choices=RATING,default=None)
+    date = models.DateTimeField(auto_now_add=True)
+    
+    
+    def __str__(self):
+        return f'Review of {self.product.name if self.product else "Unknown Product"}'
+
+    def getRating(self):
+        return self.rating
 
 
 

@@ -16,10 +16,10 @@
             <h1>{{ product.name }}</h1>
             <p><strong>Price:</strong> ${{ product.price }}</p>
             <p><strong>Description:</strong> {{ product.description }}</p>
-            <p><strong>Average Rating:</strong> {{ avg_rating|default:"No ratings yet" }}</p>
+            <p><strong>Average Rating:</strong> {{ avgRate.rating|default:"No ratings yet" }} out of 5.0</p>
             
             <!-- Add to Cart Button -->
-            <a href="{% url 'product' product.id %}" class="btn btn-primary">Add to Cart</a>
+            <button data-product='{{product.id}}' data-action="add" class="btn btn-primary updatecart">Add to Cart</button>
         </div>
     </div>
 
