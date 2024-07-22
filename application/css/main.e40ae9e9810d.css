@@ -1,0 +1,173 @@
+.card-img-overlay {
+    background: none; /* Removes any background color */
+    background-color: transparent; /* Ensures the background is transparent */
+    opacity: 1; /* Ensures the overlay is fully opaque */
+} 
+
+.form-label {
+    display: inline-block;
+    width: 140px;
+    text-align: right;
+  }​
+
+body {
+    padding-top: 0px; /* Adjust based on your navbar height */
+}
+.banner {
+    position: relative;
+    height: 400px;
+    width: 100%;
+}
+.banner img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+}
+.banner .card-img-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+}
+
+.dropdown-toggle::after {
+    display: none;
+}
+
+
+.dropdown-submenu {
+    position: relative;
+  }
+  
+  .dropdown-submenu .dropdown-menu {
+    top: 0;
+    left: 100%;
+    margin-top: -1px;
+    display: none; 
+  }
+  
+  .dropdown-submenu:hover>.dropdown-menu {
+      display: block;
+  }
+
+.cartTab{
+    width: 400px;
+    background-color: rgb(105, 104, 104);
+    color:aliceblue;
+    position: fixed;
+    inset: 0 -400px 0 auto;
+    display: grid;
+    grid-template-rows:  70px 1fr 70px;
+}
+
+body.showCart .cartTab {
+    inset: 0 0px 0 auto;
+
+}
+
+.cartTab .btn{
+    display: grid;
+    grid-template-columns: repeat(2,1fr);
+}
+
+.cartTab .btn .checkout{
+    background-color: rgb(118, 142, 161);
+    border: none;
+    cursor: pointer;
+}
+
+.cartTab .btn .close{
+    background-color: white;
+    border: none;
+    cursor: pointer;
+}
+
+#cartTotal {
+    display: relative;
+    text-align: center;
+
+}
+
+.cart-row {
+    display: flex;
+    align-items: flex-stretch;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ececec;
+}
+
+.product-row {
+    display: flex;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #ececec;
+}
+
+.product-image {
+    width: 100px;
+}
+
+.form-field{
+    width: 250px;
+    display: inline-block;
+    padding: 5px;
+}
+
+.changeQuantity{
+    cursor: pointer;
+}
+
+
+
+.card.no-border {
+    border: none; /* Removes the border */
+    box-shadow: none; /* Optional: Removes the box shadow if any */
+}
+
+.product-card {
+    overflow: hidden; /* Ensure the image doesn't overflow */
+    border: 1px solid #ddd; /* Optional: Add a border to define the card */
+    border-radius: 0.25rem; /* Optional: Add rounded corners to the card */
+    position: relative;
+}
+
+
+.card-img-container {
+    background-color: #d8d8d8; /* Set your desired background color */
+    position: relative;
+    padding-top: 75%; /* Adjust this value for different aspect ratios (e.g., 75% for 4:3) */
+
+   
+}
+
+    
+.product-card img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Maintain aspect ratio while covering the container */
+    transition: transform 0.3s ease; /* Smooth transition for zoom effect */
+}
+.product-card:hover img {
+    transform: scale(1.2); /* Zoom in effect */
+}
+.rating {
+    color: #f39c12; /* Gold color for rating stars */
+}
+
+.search-bar-container {
+    position: relative;
+}
+.search-bar-container .dropdown-menu {
+    min-width: 100%;
+}
+
+
