@@ -1,13 +1,87 @@
 from django.shortcuts import render, redirect
 from .models import *
 from django.contrib.auth.forms import UserCreationForm
-from .forms import CreateUserForm, UpdateUserForm
+from .forms import *
 from django.contrib.auth import authenticate, login, logout
 from django.contrib import messages
+from django.db.models import Avg
 
 from django.http import JsonResponse
 import json
 # Create your views here.
+
+
+
+
+def product(request, pk):
+    product = Product.objects.get(id=pk)
+
+    #recommendations based on category
+    products = Product.objects.filter(category=product.category).exclude(id=pk)[:1]
+
+    #show reviews
+    review = Review.objects.filter(product=product)
+
+    #Avg Rating
+    avgRate = Review.objects.filter(product=product).aggregate(rating=Avg('rating'))
+
+    #Review Form
+    reviewform = ReviewForm()
+
+    create_review = True
+
+    if request.user.is_authenticated:
+        customer = Customer.objects.get(user=request.user)        
+        user_review = Review.objects.filter(customer=customer, product=product).count()
+
+        if user_review > 0:
+            create_review = False
+
+
+
+
+    context = {
+        'create_review':create_review,
+        'product':product,
+        'products':products,
+        'review':review,
+        'avgRate':avgRate,
+        'reviewform':reviewform,
+         }
+    
+    return render(request, 'store/product.html',context)
+
+
+
+def search(request):
+    query = request.GET.get('q', '')
+    selected_category = request.GET.get('category', '')
+
+    # Filter products based on search query and selected category
+    products = Product.objects.filter(name__icontains=query).order_by("-price")
+    if selected_category:
+        products = products.filter(category__name=selected_category)
+
+    categories = Category.objects.all()
+    context = {
+        'products': products,
+        'query': query,
+        'categories': categories,
+        'selected_category': selected_category,
+    }
+    return render(request, 'store/search.html', context)
+
+
+def category(request, cat):
+    try:
+        category = Category.objects.get(name=cat)
+        product = Product.objects.filter(category=category)
+        return render(request,'store/category.html',{'products':product, 'category':category})
+
+    except:
+        return redirect('store')
+
+
 
 def profile(request):
     if request.user.is_authenticated:
@@ -53,10 +127,10 @@ def loginPage(request):
         return render(request, 'store/login.html', context)
 
 
-
 def store(request):
+    categorys = Category.objects.all()
     products = Product.objects.all()
-    context = {'products' :products}
+    context = {'products' :products,'categorys': categorys}
     return render(request, 'store/store.html', context)
 
 def cart(request):
@@ -107,5 +181,36 @@ def updateItem(request):
     if orderItem.quantity <= 0:
         orderItem.delete()
 
-        
+
     return JsonResponse('Item added', safe=False)
+
+
+def ajax_add_review(request, pk, ):
+    product = Product.objects.get(id=pk)
+    customer = Customer.objects.get(user=request.user)
+    #user = request.user
+
+
+    review = Review.objects.create(
+        customer = customer,
+        product = product,
+        review = request.POST['review'],
+        rating = request.POST['rating'],
+
+    )
+
+    context = {
+        'customer': customer.user.username,
+        'review': request.POST['review'],
+        'rating': request.POST['rating'],
+    }
+
+    avgRate = Review.objects.filter(product=product).aggregate(rating=Avg('rating'))
+
+    return JsonResponse(
+        {
+        'bool': True,
+        'context': context,
+        'avgRate': avgRate
+        }
+    )

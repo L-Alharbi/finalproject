@@ -1,0 +1,211 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+
+
+<div class="container mt-5">
+    <div class="row">
+        <!-- Product Image -->
+        <div class="col-md-6">
+            <img src="{{ product.image.url }}" class="img-fluid" alt="{{ product.name }}">
+        </div>
+        
+        <!-- Product Details -->
+        <div class="col-md-6">
+            <h1>{{ product.name }}</h1>
+            <p><strong>Price:</strong> ${{ product.price }}</p>
+            <p><strong>Description:</strong> {{ product.description }}</p>
+            <p><strong>Average Rating:</strong> {{ avg_rating|default:"No ratings yet" }}</p>
+            
+            <!-- Add to Cart Button -->
+            <a href="{% url 'product' product.id %}" class="btn btn-primary">Add to Cart</a>
+        </div>
+    </div>
+
+        <!-- Review Form -->
+
+    <div class="container mt-5">
+        <!-- Nav tabs -->
+        <ul class="nav nav-tabs" id="myTab" role="tablist">
+            <li class="nav-item" role="presentation">
+                <a class="nav-link active" id="product-info-tab" data-bs-toggle="tab" href="#product-info" role="tab" aria-controls="product-info" aria-selected="true">You might also like</a>
+            </li>
+            <li class="nav-item" role="presentation">
+                <a class="nav-link" id="reviews-tab" data-bs-toggle="tab" href="#reviews" role="tab" aria-controls="reviews" aria-selected="false">Reviews</a>
+            </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content mt-3" id="myTabContent">
+            <!-- Product Information Tab -->
+            
+
+
+        <div class="tab-pane fade show active" id="product-info" role="tabpanel" aria-labelledby="product-info-tab">
+            <div class="container mt-5">
+                <div class="row">
+                    {% for product in products %}
+                        <div class="col-md-4 mb-4">
+                            <div class="card product-card">
+                                <div class="card-img-container">
+                                    <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ product.name }}</h5>
+                                    <p class="card-text">{{ product.description }}</p>
+                                    <a href="{% url 'product' product.id %}" class="btn btn-primary">View Details</a>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+            
+            <!-- Reviews Tab -->
+            <div class="tab-pane fade" id="reviews" role="tabpanel" aria-labelledby="reviews-tab">
+                <h3>Reviews</h3>
+                
+                <!-- Display Reviews -->
+                {% for r in review %}
+                    <div class="row mb-3">
+                        <div class="col-sm-6">
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">{{ r.customer.username|title }}</h5>
+                                    <p class="card-text">{{ r.date|date:"d M, Y" }}</p>
+                                    <p class="card-text">{{ r.review }}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% empty %}
+                    <p>No reviews yet.</p>
+                {% endfor %}
+                
+                <!-- Review Form -->
+                {% if create_review %}
+                    {% if request.user.is_authenticated %}
+                        <h4 class="mb-4 remove-add">Add a Review</h4>
+                        <p class="mb-15" id="reviewres"></p>
+                        <form class="review_form" id="review_form" action="{% url 'ajax_add_review' product.id %}" method="POST">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                {{ reviewform.review }}
+                            </div>
+                            <div class="mb-3">
+                                {{ reviewform.rating }}
+                            </div>
+                            <button id='reviewbtn' type="submit" class="btn btn-primary">Submit</button>
+                        </form>
+                    {% else %}
+                        <p>Please <a href="{% url 'login' %}">login</a> to add a review.</p>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+<!--
+<div class="row">
+    <div class="col-lg-6">
+        <div class="">
+
+            <img class="" src="{{product.imageURL}}">
+
+        </div>
+    </div>
+
+
+
+    <div class="col-lg-6">
+        <div class="">
+            <div>
+                {{product.name}}
+            </div>
+
+            <div>
+                 {{product.category}}
+            </div>
+
+            <div>
+                {{product.description}}
+            </div>
+            <div>
+                ${{product.price|floatformat:2}}
+            </div>
+            <div>
+                {{avgRate.rating|floatformat:2}} out of 5
+            </div>
+
+            <div class="product-row">
+                
+                    <div style="flex:1"><img data-product="{{product.id}}" data-action="remove" class="changeQuantity updatecart"  src="{% static 'images/dash.svg' %}"></div>
+                    <div style="flex:1"><p>x</p></div>
+                    <div style="flex:1"><img data-product="{{product.id}}" data-action="add" class="changeQuantity updatecart" src="{% static 'images/plus.svg' %}"></div>
+                    <div style="flex:1"><button data-product="{{product.id}}" data-action="add" class="btn btn-dark w-100 p-3 rounded-0 text-warning updatecart">ADD TO CART</button></div>
+
+            </div>
+
+        </div>
+        {% for r in review %}
+        <div class="row">
+            <div class="col-sm-6">
+              <div class="card">
+                <div class="card-body">
+                  <h5 class="card-title">{{r.customer.username|title}}</h5>
+                  <p class="card-text">{{r.date|date:"d M, Y"}}</p>
+                  <p class="card-text">{{r.review}}</p>
+                </div>
+              </div>
+            </div>
+        </div>
+        {% endfor %}
+
+        {% if create_review == True %}
+        {% if request.user.is_authenticated == True %}
+        <h4 class="mb-15 remove-add">Add a Review</h4>
+        <p class="mb-15" id="reviewres"></p>
+        <form class="review_form" id="review_form" action="{% url 'ajax_add_review' product.id %}" method="POST">
+            {% csrf_token %}
+            <div class="product rate d-inline-block mb-30"></div>    
+            <div class="row">
+                <div class="col-12">
+                    <div class="form-group">
+                        {{reviewform.review}}
+
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="form-group">
+                        {{reviewform.rating}}
+                    </div>
+                </div>
+                <div class="form-group">
+                    <button id='reviewbtn' type="submit">Submit</button>
+                </div>
+            </div>
+        </form>
+        {% endif %}
+        {% endif %}
+
+
+
+
+
+
+
+
+    -->
+
+
+
+
+
+
+
+
+
+{% endblock content %}
