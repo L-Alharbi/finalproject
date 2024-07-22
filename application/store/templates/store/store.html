@@ -1,4 +1,4 @@
-{% extends 'store/main.html' %}
+{% extends 'main.html' %}
 {% load static %}
 
 {% block content %}
@@ -6,7 +6,6 @@
 <div class="row">
 
     {% for product in products %}
-
     <div class="col-lg-4">
         <div class="card border-0 rounded-0 shadow m-5" style="width: 18rem;">
             <img class="img-thumbnail" src="{{product.imageURL}}" >
@@ -28,7 +27,7 @@
                     <h5>${{product.price|floatformat:2}}</h5>
                 </div>
                 <div class="col-8">
-                    <a href="#" class="btn btn-dark w-100 p-3 rounded-0 text-warning">ADD TO CART</a>
+                    <button data-product="{{product.id}}" data-action="add" class="btn btn-dark w-100 p-3 rounded-0 text-warning updatecart">ADD TO CART</button>
                 </div>
             </div>
         </div>

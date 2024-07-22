@@ -1,0 +1,17 @@
+{% extends 'main.html' %}
+{% load static %}
+
+{% block content %}
+
+<form method="POST" action="{% url 'profile' %}">
+    {% csrf_token %}
+
+    {{user_form.as_p}}
+    <br/><br/>
+        <button type="submit" class="btn btn-primary">Update</button>
+        <button name="logout" type="submit" class="btn btn-primary">logout</button>
+
+</form>
+
+{{form.errors}}
+{% endblock content %}

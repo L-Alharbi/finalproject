@@ -1,8 +1,8 @@
-{% extends 'store/main.html' %}
+{% extends 'main.html' %}
 {% load static %}
 
 {% block content %}
-<form method="POST" action="">
+<form method="POST" action="{% url 'login' %}">
     {% csrf_token %}
 
     <div class="mb-3">
