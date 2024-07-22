@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-(vo-(lor47gs2)3$m3!u1*y=ow(wb$k$r^b$$!id*dw&li8x#y
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
-ALLOWED_HOSTS = ['finalproject-1-ontv.onrender.com','finalproject-1-ontv.onrender.com']
+ALLOWED_HOSTS = ['lalharbi.pythonanywhere.com']
 CSRF_TRUSTED_ORIGINS = []
 
 
